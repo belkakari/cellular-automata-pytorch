@@ -23,7 +23,9 @@ args = parser.parse_args()
 
 logging.basicConfig(level=logging.INFO)
 
-with open(args['config']) as f:
+config_path = args.config
+
+with open(config_path) as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
 device = config['device']

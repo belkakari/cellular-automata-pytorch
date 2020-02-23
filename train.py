@@ -5,12 +5,12 @@ import logging
 import os
 import random
 import shutil
+import yaml
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.optim import lr_scheduler
-import yaml
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
@@ -18,6 +18,7 @@ from modules.datasets import StateGridSet
 from modules.networks import Perception, Policy
 from modules.models import SimpleCA
 from modules.utils import get_timestamp, load_emoji, setup_logger
+
 
 parser = argparse.ArgumentParser(description='Train neural cellular automata')
 parser.add_argument('-c', '--config', type=str,
@@ -36,6 +37,7 @@ split_rate_interval = config['split_rate_interval']
 test_frequency = config['test_frequency']
 use_coords = config['model']['use_coords']
 random_spawn = config['model']['random_spawn']
+
 
 if (config['experiment_name'] == 'time') or \
    ('experiment_name' not in config.keys()):

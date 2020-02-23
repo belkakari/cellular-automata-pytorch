@@ -4,7 +4,6 @@ import argparse
 import logging
 import os
 import random
-from time import gmtime, strftime
 
 import torch
 import torch.nn as nn
@@ -16,7 +15,8 @@ from torchvision import transforms
 import shutils
 from modules.datasets import StateGridSet
 from modules.networks import Perception, Policy
-from modules.utils import alive_mask, load_emoji, stochastic_update_mask, test
+from modules.utils import (alive_mask, load_emoji, stochastic_update_mask,
+                           test, setup_logger, get_timestamp)
 
 parser = argparse.ArgumentParser(description='Train neural cellular automata')
 parser.add_argument('-c', '--config', type=str,
@@ -37,7 +37,7 @@ test_frequency = config['test_frequency']
 
 if (config['experiment_name'] == 'time') or \
    ('experiment_name' not in config.keys()):
-    start_time = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
+    start_time = get_timestamp()
     experiment_name = start_time
 else:
     experiment_name = config['experiment_name']
@@ -46,8 +46,8 @@ output_folder = os.path.join(config['output_folder'], experiment_name)
 os.makedirs(output_folder, exist_ok=True)
 shutils.copy(config_path, os.path.join(output_folder, 'config.yaml'))
 
-logging.basicConfig(filename=os.path.join(output_folder, 'log.log'),
-                    level=logging.INFO)
+setup_logger('base', output_folder,
+             level=logging.INFO, screen=True, tofile=True)
 
 img = load_emoji(emoji='🦎')
 img = transforms.ToTensor()(img)

@@ -50,7 +50,7 @@ output_folder = os.path.join(config['output_folder'], experiment_name)
 os.makedirs(output_folder, exist_ok=True)
 shutil.copy(config_path, os.path.join(output_folder, 'config.yaml'))
 
-logging_level = logging.DEBUG if config['logging_level'] == 'debug' else logging.INFO
+logging_level = logging.DEBUG if config['logging_level'] == 'DEBUG' else logging.INFO
 setup_logger('base', output_folder,
              level=logging_level, screen=True, tofile=True)
 

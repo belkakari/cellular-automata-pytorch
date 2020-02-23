@@ -1,13 +1,15 @@
 import random
 
 import torch
+import torch.nn.functional as F
 from torch.utils.data import Dataset
 
 
 class StateGridSet(Dataset):
     def __init__(self, target, use_coords=False,
-                 batch_size=10, random_spawn=True):
-        self.target = target
+                 batch_size=10, random_spawn=True,
+                 pad=50):
+        self.target = F.pad(target, (0, pad, 0, pad))
         self.use_coords = use_coords
         self.batch_size = batch_size
         self.random_spawn = random_spawn

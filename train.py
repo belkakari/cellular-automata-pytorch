@@ -99,10 +99,10 @@ for epoch in range(num_epochs):
         output_path = os.path.join(output_folder, f'{epoch}/')
         logger.info(f'writing gif to {output_path}')
         os.makedirs(output_path, exist_ok=True)
-        imgs = []
         topil = transforms.ToPILImage()
         with torch.no_grad():
             for k, (state_grid, target) in enumerate(dloader_test):
+                imgs = []
                 model.get_input(state_grid, target)
                 for _ in range(150):
                     model.forward()

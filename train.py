@@ -49,6 +49,8 @@ shutil.copy(config_path, os.path.join(output_folder, 'config.yaml'))
 setup_logger('base', output_folder,
              level=logging.INFO, screen=True, tofile=True)
 
+logger = logging.getLogger('base')
+
 img = load_emoji(emoji='🦎')
 img = transforms.ToTensor()(img)
 img = transforms.Normalize(tuple(0.5 for _ in range(img.shape[0])),
@@ -110,11 +112,11 @@ for epoch in range(num_epochs):
         optim.step()
     scheduler.step()
 
-    logging.info(f'{loss_value.item():.2f}, {n_steps} steps, {split_rate} split rate, {epoch} epoch')
+    logger.info(f'{loss_value.item():.2f}, {n_steps} steps, {split_rate} split rate, {epoch} epoch')
 
     if epoch % test_frequency == 0:
         output_path = os.path.join(output_folder, f'{epoch}/')
-        logging.info(f'writing gif to {output_path}')
+        logger.info(f'writing gif to {output_path}')
         os.makedirs(output_path, exist_ok=True)
         test(policy, perception, dloader_test,
              output_path, num_steps=150,

@@ -63,7 +63,7 @@ def test(policy, perception, dloader_test,
 
 
 def get_timestamp():
-    return strftime("%Y%m%d-%H:%M:%S", gmtime())
+    return strftime("%Y-%m-%d-%H:%M:%S", gmtime())
 
 
 def setup_logger(logger_name, root, level=logging.INFO,

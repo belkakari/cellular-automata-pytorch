@@ -26,18 +26,19 @@ config_path = args.config
 with open(config_path) as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
+start_time = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
+
 device = config['device']
 stochastic_prob = config['stochastic_prob']
 batch_size = config['batch_size']
 num_epochs = config['num_epochs']
-output_folder = config['output_folder']
 n_steps_interval = config['n_steps_interval']
 split_rate_interval = config['split_rate_interval']
 test_frequency = config['test_frequency']
+output_folder = os.path.join(config['output_folder'], start_time)
+os.makedirs(output_folder, exist_ok=True)
 
-start_time = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
-
-logging.basicConfig(filename=os.path.join(output_folder, start_time, 'log.log'),
+logging.basicConfig(filename=os.path.join(output_folder, 'log.log'),
                     level=logging.INFO)
 
 img = load_emoji(emoji='🦎')
@@ -104,7 +105,7 @@ for epoch in range(num_epochs):
     logging.info(f'{loss_value.item():.2f}, {n_steps} steps, {split_rate} split rate, {epoch} epoch')
 
     if epoch % test_frequency == 0:
-        output_path = os.path.join(output_folder, start_time, f'{epoch}/')
+        output_path = os.path.join(output_folder, f'{epoch}/')
         logging.info(f'writing gif to {output_path}')
         os.makedirs(output_path, exist_ok=True)
         test(policy, perception, dloader_test,

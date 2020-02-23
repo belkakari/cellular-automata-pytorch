@@ -16,8 +16,8 @@ from torchvision import transforms
 
 from modules.datasets import StateGridSet
 from modules.networks import Perception, Policy
-from modules.utils import (alive_mask, get_timestamp, load_emoji, setup_logger,
-                           stochastic_update_mask, test)
+from modules.models import SimpleCA
+from modules.utils import get_timestamp, load_emoji, setup_logger
 
 parser = argparse.ArgumentParser(description='Train neural cellular automata')
 parser.add_argument('-c', '--config', type=str,
@@ -60,14 +60,10 @@ img = transforms.Normalize(tuple(0.5 for _ in range(img.shape[0])),
                            tuple(0.5 for _ in range(img.shape[0])))(img)
 img = img.to(device)
 
-policy = Policy(use_embedding=False, kernel=1, padding=0).to(device)
 perception = Perception(channels=16).to(device)
-optim = torch.optim.Adam(list(policy.parameters()) +
-                         list(perception.parameters()), lr=config['optim']['lr'])
-scheduler = lr_scheduler.MultiStepLR(optim,
-                                     config['optim']['milestones'],
-                                     gamma=config['optim']['gamma'])
-loss_fn = nn.MSELoss()
+policy = Policy(use_embedding=False, kernel=1, padding=0).to(device)
+
+model = SimpleCA(perception, policy, config)
 
 dset = StateGridSet(img, use_coords=use_coords,
                     batch_size=batch_size,
@@ -85,37 +81,18 @@ for epoch in range(num_epochs):
     n_steps = random.randint(*n_steps_interval)
     split_rate = random.randint(*split_rate_interval)
     for state_grid, target in dloader:
+        model.get_input(state_grid, target)
         for k in range(n_steps):
-            alive_pre = alive_mask((state_grid + 1.) / 2., thr=0.1)
-            perception_grid = perception(state_grid)
-            ds_grid = policy(perception_grid)
-            mask = stochastic_update_mask(ds_grid,
-                                          prob=stochastic_prob)
-            state_grid = state_grid + ds_grid * mask
-            alive_post = alive_mask((state_grid + 1.) / 2., thr=0.1)
-            final_mask = (alive_post.bool() & alive_pre.bool()).float()
-            state_grid = state_grid * final_mask
-
-            if dset.use_coords:
-                state_grid[:, -1, ...] = xv[None, :, :]
-                state_grid[:, -2, ...] = yv[None, :, :]
-
+            model.forward()
             if k % split_rate == 0:
-                loss_value = loss_fn(target[:, :4, ...],
-                                     state_grid[:, :4, ...])
-                optim.zero_grad()
-                loss_value.backward()
-                optim.step()
-                state_grid = state_grid.detach()
+                model.optimize_parameters()
+                state_grid = model.state_grid.detach()
+                model.get_input(state_grid, target)
 
     if k % split_rate == 0:
         pass
     else:
-        loss_value = loss_fn(target[:, :4, ...], state_grid[:, :4, ...])
-        optim.zero_grad()
-        loss_value.backward()
-        optim.step()
-    scheduler.step()
+        model.optimize_parameters()
 
     logger.info(f'{loss_value.item():.2f}, {n_steps} steps, {split_rate} split rate, {epoch} epoch')
 
@@ -123,6 +100,13 @@ for epoch in range(num_epochs):
         output_path = os.path.join(output_folder, f'{epoch}/')
         logger.info(f'writing gif to {output_path}')
         os.makedirs(output_path, exist_ok=True)
-        test(policy, perception, dloader_test,
-             output_path, num_steps=150,
-             stochastic_prob=stochastic_prob)
+        imgs = []
+        topil = transforms.ToPILImage()
+        with torch.no_grad():
+            for k, (state_grid, target) in enumerate(dloader_test):
+                model.get_input(state_grid, target)
+                for _ in range(150):
+                    model.forward()
+                    imgs.append(topil(model.state_grid[0, :4, ...].cpu()))
+                imgs[0].save(os.path.join(output_path, f'{k}.gif'),
+                             save_all=True, append_images=imgs[1:])

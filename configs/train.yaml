@@ -1,12 +1,13 @@
 experiment_name: 'time'
 device: 'cuda:0'
-stochastic_prob: 0.1
 output_folder: ./outputs/
 n_steps_interval: [80, 150]
 split_rate_interval: [20, 30]
 test_frequency: 100
-use_coords: True  # whether to pass meshgrid as a feature
-random_spawn: False  # randomly select initial cell coordinates
+model:
+  use_coords: True  # whether to pass meshgrid as a feature
+  random_spawn: False  # randomly select initial cell coordinates
+  stochastic_prob: 0.1
 train:
   batch_size: 4
   num_epochs: 2000

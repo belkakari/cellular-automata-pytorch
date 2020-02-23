@@ -22,7 +22,8 @@ class Perception(nn.Module):
                                   dim=0).repeat(channels,
                                                 channels, 1, 1)
         self.perception = nn.Conv2d(channels, channels * 3,
-                                    kernel_size=1, bias=False, padding=1)
+                                    kernel_size=1, bias=False,
+                                    padding=1)
         self.perception.weight = nn.Parameter(self.kernel)
 
     def forward(self, state_grid):
@@ -31,7 +32,7 @@ class Perception(nn.Module):
 
 class Policy(nn.Module):
     def __init__(self, state_dim=16, interm_dim=128,
-                 use_embedding=True, kernel=3, padding=1):
+                 use_embedding=True, kernel=1, padding=0):
         super().__init__()
         dim = state_dim * 3
         if use_embedding:

@@ -21,7 +21,8 @@ class AbstractCAModel(nn.Module):
 
 
 class SimpleCA(AbstractCAModel):
-    def __init__(self, perception, policy, config, logger=None):
+    def __init__(self, perception, policy, config,
+                 logger=None, grad_clip=5):
         super().__init__()
         self.perception = perception
         self.policy = policy
@@ -35,6 +36,7 @@ class SimpleCA(AbstractCAModel):
                                                 gamma=config['optim']['gamma'])
         self.loss_fn = nn.MSELoss()
         self.logger = logger
+        self.grad_clip = grad_clip
 
     def forward(self):
         alive_pre = utils.alive_mask((self.state_grid + 1.) / 2., thr=0.1)
@@ -59,6 +61,8 @@ class SimpleCA(AbstractCAModel):
                                   self.state_grid[:, :4, ...])
         self.optim.zero_grad()
         loss_value.backward()
+        torch.nn.utils.clip_grad_norm_(self.policy.parameters(),
+                                       max_norm=self.grad_clip)
         if self.logger:
             norm = []
             for p in self.policy.parameters():

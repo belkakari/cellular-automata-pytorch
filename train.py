@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import random
+import shutil
 
 import torch
 import torch.nn as nn
@@ -12,11 +13,10 @@ import yaml
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
-import shutils
 from modules.datasets import StateGridSet
 from modules.networks import Perception, Policy
-from modules.utils import (alive_mask, load_emoji, stochastic_update_mask,
-                           test, setup_logger, get_timestamp)
+from modules.utils import (alive_mask, get_timestamp, load_emoji, setup_logger,
+                           stochastic_update_mask, test)
 
 parser = argparse.ArgumentParser(description='Train neural cellular automata')
 parser.add_argument('-c', '--config', type=str,
@@ -44,7 +44,7 @@ else:
 
 output_folder = os.path.join(config['output_folder'], experiment_name)
 os.makedirs(output_folder, exist_ok=True)
-shutils.copy(config_path, os.path.join(output_folder, 'config.yaml'))
+shutil.copy(config_path, os.path.join(output_folder, 'config.yaml'))
 
 setup_logger('base', output_folder,
              level=logging.INFO, screen=True, tofile=True)

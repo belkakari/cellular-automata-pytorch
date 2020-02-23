@@ -29,14 +29,13 @@ with open(config_path) as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
 device = config['device']
-stochastic_prob = config['stochastic_prob']
 batch_size = config['train']['batch_size']
 num_epochs = config['train']['num_epochs']
 n_steps_interval = config['n_steps_interval']
 split_rate_interval = config['split_rate_interval']
 test_frequency = config['test_frequency']
-use_coords = config['use_coords']
-random_spawn = config['random_spawn']
+use_coords = config['model']['use_coords']
+random_spawn = config['model']['random_spawn']
 
 if (config['experiment_name'] == 'time') or \
    ('experiment_name' not in config.keys()):

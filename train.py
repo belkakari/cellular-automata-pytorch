@@ -49,7 +49,7 @@ os.makedirs(output_folder, exist_ok=True)
 shutil.copy(config_path, os.path.join(output_folder, 'config.yaml'))
 
 setup_logger('base', output_folder,
-             level=logging.INFO, screen=True, tofile=True)
+             level=logging.DEBUG, screen=True, tofile=True)
 
 logger = logging.getLogger('base')
 

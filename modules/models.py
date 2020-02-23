@@ -21,7 +21,7 @@ class AbstractCAModel(nn.Module):
 
 
 class SimpleCA(AbstractCAModel):
-    def __init__(self, perception, policy, config):
+    def __init__(self, perception, policy, config, logger=None):
         super().__init__()
         self.perception = perception
         self.policy = policy
@@ -34,6 +34,7 @@ class SimpleCA(AbstractCAModel):
                                                 config['optim']['milestones'],
                                                 gamma=config['optim']['gamma'])
         self.loss_fn = nn.MSELoss()
+        self.logger = logger
 
     def forward(self):
         alive_pre = utils.alive_mask((self.state_grid + 1.) / 2., thr=0.1)
@@ -58,6 +59,12 @@ class SimpleCA(AbstractCAModel):
                                   self.state_grid[:, :4, ...])
         self.optim.zero_grad()
         loss_value.backward()
+        if self.logger:
+            norm = []
+            for p in self.policy.parameters():
+                param_norm = p.grad.data.norm(norm_type)
+                norm.append(param_norm.item() ** norm_type)
+            self.logger.debug(norm)
         self.optim.step()
         self.scheduler.step()
         return loss_value

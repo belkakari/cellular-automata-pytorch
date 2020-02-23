@@ -5,6 +5,7 @@ import os
 import random
 import logging
 import yaml
+from time import gmtime, strftime
 
 import torch
 import torch.nn as nn
@@ -20,9 +21,6 @@ parser = argparse.ArgumentParser(description='Train neural cellular automata')
 parser.add_argument('-c', '--config', type=str,
                     help='path to config .yaml')
 args = parser.parse_args()
-
-logging.basicConfig(level=logging.INFO)
-
 config_path = args.config
 
 with open(config_path) as f:
@@ -36,6 +34,11 @@ output_folder = config['output_folder']
 n_steps_interval = config['n_steps_interval']
 split_rate_interval = config['split_rate_interval']
 test_frequency = config['test_frequency']
+
+start_time = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
+
+logging.basicConfig(filename=os.path.join(output_folder, start_time, 'log.log'),
+                    level=logging.INFO)
 
 img = load_emoji(emoji='🦎')
 img = transforms.ToTensor()(img)
@@ -101,7 +104,7 @@ for epoch in range(num_epochs):
     logging.info(f'{loss_value.item():.2f}, {n_steps} steps, {split_rate} split rate, {epoch} epoch')
 
     if epoch % test_frequency == 0:
-        output_path = os.path.join(output_folder, f'{epoch}/')
+        output_path = os.path.join(output_folder, start_time, f'{epoch}/')
         logging.info(f'writing gif to {output_path}')
         os.makedirs(output_path, exist_ok=True)
         test(policy, perception, dloader_test,

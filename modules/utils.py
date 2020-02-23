@@ -11,7 +11,7 @@ from torchvision import transforms
 def stochastic_update_mask(ds_grid, prob=0.5):
     # Generate mask for zero out a random fraction of the updates.
     bern = torch.distributions.Bernoulli(prob)
-    rand_mask = bern.sample_n(ds_grid.shape[2] * ds_grid.shape[3])
+    rand_mask = bern.sample((ds_grid.shape[2] * ds_grid.shape[3],))
     rand_mask = rand_mask.view(ds_grid.shape[2:]).float()
     return rand_mask.to(ds_grid.device)[None, None]
 

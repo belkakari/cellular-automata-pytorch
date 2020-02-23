@@ -98,7 +98,8 @@ for epoch in range(num_epochs):
     logging.info(f'{loss_value.item():.2f}, {n_steps} steps, {split_rate} split rate, {epoch} epoch')
 
     if epoch % 50 == 0:
-        output_path = os.path.join(output_folder, f'/{epoch}/')
+        output_path = os.path.join(output_folder, f'{epoch}/')
+        logging.info(f'writing gif to {output_path}')
         os.makedirs(output_path, exist_ok=True)
         test(policy, perception, dloader_test,
              output_path, num_steps=150,

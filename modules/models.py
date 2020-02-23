@@ -62,8 +62,8 @@ class SimpleCA(AbstractCAModel):
         if self.logger:
             norm = []
             for p in self.policy.parameters():
-                param_norm = p.grad.data.norm(norm_type)
-                norm.append(param_norm.item() ** norm_type)
+                param_norm = p.grad.data.norm(2)
+                norm.append(param_norm.item() ** 2)
             self.logger.debug(norm)
         self.optim.step()
         self.scheduler.step()

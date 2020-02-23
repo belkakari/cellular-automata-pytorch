@@ -34,6 +34,8 @@ num_epochs = config['num_epochs']
 n_steps_interval = config['n_steps_interval']
 split_rate_interval = config['split_rate_interval']
 test_frequency = config['test_frequency']
+use_coords = config['use_coords']
+random_spawn = config['random_spawn']
 
 if (config['experiment_name'] == 'time') or \
    ('experiment_name' not in config.keys()):
@@ -64,10 +66,10 @@ optim = torch.optim.Adam(list(policy.parameters()) +
 scheduler = torch.optim.lr_scheduler.StepLR(optim, 100, gamma=0.7)
 loss_fn = nn.MSELoss()
 
-dset = StateGridSet(img, use_coords=True,
+dset = StateGridSet(img, use_coords=use_coords,
                     batch_size=batch_size,
-                    random_spawn=False)
-dset_test = StateGridSet(img, use_coords=True,
+                    random_spawn=random_spawn)
+dset_test = StateGridSet(img, use_coords=use_coords,
                          batch_size=1,
                          random_spawn=False)
 dloader = DataLoader(dset, batch_size=batch_size)

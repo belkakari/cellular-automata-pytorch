@@ -1,0 +1,5 @@
+device: 'cuda:0'
+stochastic_prob: 0.1
+batch_size: 4
+num_epochs: 2000
+output_folder: './outputs/'

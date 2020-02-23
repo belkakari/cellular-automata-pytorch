@@ -1,5 +1,9 @@
+# -*- coding: utf-8 -*-
+
+import argparse
 import os
 import random
+import logging
 
 import torch
 import torch.nn as nn
@@ -11,6 +15,14 @@ from modules.datasets import StateGridSet
 from modules.networks import Perception, Policy
 from modules.utils import alive_mask, load_emoji, stochastic_update_mask, test
 
+parser = argparse.ArgumentParser(description='Train neural cellular automata')
+parser.add_argument('-c', '--config', type=str,
+                    help='path to config .yaml')
+args = parser.parse_args()
+
+logging.basicConfig(level=logging.INFO)
+
+logging.info(args)
 device = 'cuda:0'
 stochastic_prob = 0.1
 batch_size = 4
@@ -77,8 +89,10 @@ for epoch in range(num_epochs):
         loss_value.backward()
         optim.step()
     scheduler.step()
-    print(f'{loss_value.item():.2f}, {n_steps} steps, \
-          {split_rate} split rate, {epoch} epoch')
+
+    logging.info(f'{loss_value.item():.2f}, {n_steps} steps, ',
+                 f'{split_rate} split rate, {epoch} epoch')
+
     if epoch % 50 == 0:
         output_path = os.path.join(output_folder, f'/{epoch}/')
         os.makedirs(output_path, exist_ok=True)

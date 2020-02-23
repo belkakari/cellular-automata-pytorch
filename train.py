@@ -33,6 +33,9 @@ stochastic_prob = config['stochastic_prob']
 batch_size = config['batch_size']
 num_epochs = config['num_epochs']
 output_folder = config['output_folder']
+n_steps_interval = config['n_steps_interval']
+split_rate_interval = config['split_rate_interval']
+test_frequency = config['test_frequency']
 
 img = load_emoji(emoji='🦎')
 img = transforms.ToTensor()(img)
@@ -60,8 +63,8 @@ xv, yv = torch.meshgrid([torch.linspace(-1, 1, steps=img.shape[-1]),
                          torch.linspace(-1, 1, steps=img.shape[-2])])
 
 for epoch in range(num_epochs):
-    n_steps = random.randint(100, 150)
-    split_rate = random.randint(30, 40)
+    n_steps = random.randint(*n_steps_interval)
+    split_rate = random.randint(*split_rate_interval)
     for state_grid, target in dloader:
         for k in range(n_steps):
             alive_pre = alive_mask((state_grid + 1.) / 2., thr=0.1)
@@ -97,7 +100,7 @@ for epoch in range(num_epochs):
 
     logging.info(f'{loss_value.item():.2f}, {n_steps} steps, {split_rate} split rate, {epoch} epoch')
 
-    if epoch % 50 == 0:
+    if epoch % test_frequency == 0:
         output_path = os.path.join(output_folder, f'{epoch}/')
         logging.info(f'writing gif to {output_path}')
         os.makedirs(output_path, exist_ok=True)

@@ -2,4 +2,7 @@ device: 'cuda:0'
 stochastic_prob: 0.1
 batch_size: 4
 num_epochs: 2000
-output_folder: './outputs/'
+output_folder: ./outputs/
+n_steps_interval: (80, 150)
+split_rate_interval: (20, 30)
+test_frequency: 100

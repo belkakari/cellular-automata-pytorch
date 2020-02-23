@@ -1,5 +1,7 @@
 import io
 import os
+import logging
+from time import gmtime, strftime
 
 import requests
 import torch
@@ -58,3 +60,24 @@ def test(policy, perception, dloader_test,
             imgs.append(topil(state_grid[0, :4, ...].cpu()))
             imgs[0].save(os.path.join(output_path, f'{k}.gif'),
                          save_all=True, append_images=imgs[1:])
+
+
+def get_timestamp():
+    return strftime("%Y-%m-%d-%H:%M:%S", gmtime())
+
+
+def setup_logger(logger_name, root, level=logging.INFO,
+                 screen=False, tofile=False):
+    lg = logging.getLogger(logger_name)
+    formatter = logging.Formatter('%(asctime)s.%(msecs)03d - %(levelname)s: %(message)s',
+                                  datefmt='%y-%m-%d %H:%M:%S')
+    lg.setLevel(level)
+    if tofile:
+        log_file = os.path.join(root, f'_{get_timestamp()}.log')
+        fh = logging.FileHandler(log_file, mode='w')
+        fh.setFormatter(formatter)
+        lg.addHandler(fh)
+    if screen:
+        sh = logging.StreamHandler()
+        sh.setFormatter(formatter)
+        lg.addHandler(sh)

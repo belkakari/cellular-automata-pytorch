@@ -4,6 +4,7 @@ import argparse
 import os
 import random
 import logging
+import yaml
 
 import torch
 import torch.nn as nn
@@ -22,12 +23,14 @@ args = parser.parse_args()
 
 logging.basicConfig(level=logging.INFO)
 
-logging.info(args)
-device = 'cuda:0'
-stochastic_prob = 0.1
-batch_size = 4
-num_epochs = 2000
-output_folder = './outputs'
+with open(args['config']) as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
+
+device = config['device']
+stochastic_prob = config['stochastic_prob']
+batch_size = config['batch_size']
+num_epochs = config['num_epochs']
+output_folder = config['output_folder']
 
 img = load_emoji(emoji='🦎')
 img = transforms.ToTensor()(img)
@@ -90,8 +93,7 @@ for epoch in range(num_epochs):
         optim.step()
     scheduler.step()
 
-    logging.info(f'{loss_value.item():.2f}, {n_steps} steps, ',
-                 f'{split_rate} split rate, {epoch} epoch')
+    logging.info(f'{loss_value.item():.2f}, {n_steps} steps, {split_rate} split rate, {epoch} epoch')
 
     if epoch % 50 == 0:
         output_path = os.path.join(output_folder, f'/{epoch}/')

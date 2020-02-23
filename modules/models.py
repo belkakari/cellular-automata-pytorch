@@ -22,7 +22,7 @@ class AbstractCAModel(nn.Module):
 
 class SimpleCA(AbstractCAModel):
     def __init__(self, perception, policy, config,
-                 logger=None, grad_clip=5):
+                 logger=None, grad_clip=3):
         super().__init__()
         self.perception = perception
         self.policy = policy
@@ -67,7 +67,7 @@ class SimpleCA(AbstractCAModel):
             norm = []
             for p in self.policy.parameters():
                 param_norm = p.grad.data.norm(2)
-                norm.append(param_norm.item() ** 2)
+                norm.append(param_norm.item())
             self.logger.debug(norm)
         self.optim.step()
         self.scheduler.step()

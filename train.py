@@ -84,14 +84,14 @@ for epoch in range(num_epochs):
         for k in range(n_steps):
             model.forward()
             if k % split_rate == 0:
-                model.optimize_parameters()
+                loss_value = model.optimize_parameters()
                 state_grid = model.state_grid.detach()
                 model.get_input(state_grid, target)
 
     if k % split_rate == 0:
         pass
     else:
-        model.optimize_parameters()
+        loss_value = model.optimize_parameters()
 
     logger.info(f'{loss_value.item():.2f}, {n_steps} steps, {split_rate} split rate, {epoch} epoch')
 

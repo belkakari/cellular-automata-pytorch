@@ -1,16 +1,16 @@
 experiment_name: 'time'
 device: 'cuda:0'
 stochastic_prob: 0.1
-batch_size: 4
-num_epochs: 2000
 output_folder: ./outputs/
 n_steps_interval: [80, 150]
 split_rate_interval: [20, 30]
 test_frequency: 100
 use_coords: True  # whether to pass meshgrid as a feature
 random_spawn: False  # randomly select initial cell coordinates
-
+train:
+  batch_size: 4
+  num_epochs: 2000
 optim:
   milestones: [500, 1000, 1500, 2000]
   gamma: 0.5
-  lr: !!float 1e-3
+  lr: 0.001

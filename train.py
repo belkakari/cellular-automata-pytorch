@@ -30,8 +30,8 @@ with open(config_path) as f:
 
 device = config['device']
 stochastic_prob = config['stochastic_prob']
-batch_size = config['batch_size']
-num_epochs = config['num_epochs']
+batch_size = config['train']['batch_size']
+num_epochs = config['train']['num_epochs']
 n_steps_interval = config['n_steps_interval']
 split_rate_interval = config['split_rate_interval']
 test_frequency = config['test_frequency']

@@ -9,6 +9,7 @@ class StateGridSet(Dataset):
     def __init__(self, target, use_coords=False,
                  batch_size=10, random_spawn=True,
                  pad=50, target_size=128):
+        # TODO: refactor padding/resize
         self.target = F.pad(target, (0, pad, 0, pad))
         self.target = F.interpolate(self.target.unsqueeze(0), 
                                     (target_size, target_size))[0]
@@ -29,12 +30,7 @@ class StateGridSet(Dataset):
                                     int(0.8 * (self.target.shape[-2] - 1)))
         else:
             center = state_grid.shape[2] // 2
-        state_grid[4:, center, center] += torch.ones_like(state_grid[4:,
-                                                                     center,
-                                                                     center])
-        state_grid[4, center, center] = torch.ones_like(state_grid[4,
-                                                                   center,
-                                                                   center])
+        state_grid[3:, center, center] += 1.
 
         if self.use_coords:
             xv, yv = torch.meshgrid([torch.linspace(-1, 1, steps=128),

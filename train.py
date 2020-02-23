@@ -9,6 +9,7 @@ import shutil
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.optim import lr_scheduler
 import yaml
 from torch.utils.data import DataLoader
 from torchvision import transforms
@@ -62,8 +63,10 @@ img = img.to(device)
 policy = Policy(use_embedding=False, kernel=1, padding=0).to(device)
 perception = Perception(channels=16).to(device)
 optim = torch.optim.Adam(list(policy.parameters()) +
-                         list(perception.parameters()), lr=2e-3)
-scheduler = torch.optim.lr_scheduler.StepLR(optim, 100, gamma=0.7)
+                         list(perception.parameters()), lr=config['optim']['lr'])
+scheduler = lr_scheduler.MultiStepLR(optim,
+                                     config['optim']['milestones'],
+                                     gamma=config['optim']['gamma'])
 loss_fn = nn.MSELoss()
 
 dset = StateGridSet(img, use_coords=use_coords,

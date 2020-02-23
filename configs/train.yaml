@@ -9,3 +9,8 @@ split_rate_interval: [20, 30]
 test_frequency: 100
 use_coords: True  # whether to pass meshgrid as a feature
 random_spawn: False  # randomly select initial cell coordinates
+
+optim:
+  milestones: [500, 1000, 1500, 2000]
+  gamma: 0.5
+  lr: !!float 1e-3

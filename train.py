@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import logging
 import os
 import random
-import logging
-import yaml
 from time import gmtime, strftime
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import yaml
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
+import shutils
 from modules.datasets import StateGridSet
 from modules.networks import Perception, Policy
 from modules.utils import alive_mask, load_emoji, stochastic_update_mask, test
@@ -26,8 +27,6 @@ config_path = args.config
 with open(config_path) as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
-start_time = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
-
 device = config['device']
 stochastic_prob = config['stochastic_prob']
 batch_size = config['batch_size']
@@ -35,8 +34,17 @@ num_epochs = config['num_epochs']
 n_steps_interval = config['n_steps_interval']
 split_rate_interval = config['split_rate_interval']
 test_frequency = config['test_frequency']
-output_folder = os.path.join(config['output_folder'], start_time)
+
+if (config['experiment_name'] == 'time') or \
+   ('experiment_name' not in config.keys()):
+    start_time = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
+    experiment_name = start_time
+else:
+    experiment_name = config['experiment_name']
+
+output_folder = os.path.join(config['output_folder'], experiment_name)
 os.makedirs(output_folder, exist_ok=True)
+shutils.copy(config_path, os.path.join(output_folder, 'config.yaml'))
 
 logging.basicConfig(filename=os.path.join(output_folder, 'log.log'),
                     level=logging.INFO)

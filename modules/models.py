@@ -61,6 +61,13 @@ class SimpleCA(AbstractCAModel):
                                   self.state_grid[:, :4, ...])
         self.optim.zero_grad()
         loss_value.backward()
+        if self.logger:
+            norm = []
+            for p in self.policy.parameters():
+                param_norm = p.grad.data.norm(2)
+                norm.append(param_norm.item())
+            self.logger.debug('norm before clipping, ', norm)
+
         torch.nn.utils.clip_grad_norm_(self.policy.parameters(),
                                        max_norm=self.grad_clip)
         if self.logger:
@@ -68,7 +75,7 @@ class SimpleCA(AbstractCAModel):
             for p in self.policy.parameters():
                 param_norm = p.grad.data.norm(2)
                 norm.append(param_norm.item())
-            self.logger.debug(norm)
+            self.logger.debug('norm after clipping, ', norm)
         self.optim.step()
         self.scheduler.step()
         return loss_value

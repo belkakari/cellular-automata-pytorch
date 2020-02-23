@@ -65,7 +65,8 @@ img = img.to(device)
 perception = Perception(channels=16).to(device)
 policy = Policy(use_embedding=False, kernel=1, padding=0).to(device)
 
-model = SimpleCA(perception, policy, config, logger=logger)
+model = SimpleCA(perception, policy, config, logger=logger,
+                 grad_clip=config['optim']['grad_clip'])
 
 dset = StateGridSet(img, use_coords=use_coords,
                     batch_size=batch_size,

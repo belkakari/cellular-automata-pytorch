@@ -8,12 +8,13 @@ logging_level: DEBUG
 model:
   use_coords: True  # whether to pass meshgrid as a feature
   random_spawn: False  # randomly select initial cell coordinates
-  stochastic_prob: 0.1
+  stochastic_prob: 0.5
 train:
   batch_size: 4
-  num_epochs: 2000
+  num_epochs: 8000
 optim:
-  milestones: [500, 1000, 1500, 2000]
-  gamma: 0.5
-  lr: 0.001
+  milestones: [2000]
+  gamma: 0.1
+  lr: 0.002
+  grad_clip: 5
 

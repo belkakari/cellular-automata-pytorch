@@ -6,21 +6,21 @@ import torch.nn.functional as F
 class Perception(nn.Module):
     def __init__(self, channels=16):
         super().__init__()
-        sobel_x = (torch.tensor([[-1, 0, +1],
-                                 [-2, 0, +2],
-                                 [-1, 0, +1]]).float() / 8)[None, ...]
-        sobel_y = (torch.tensor([[-1, -2, -1],
+        sobel_x = (torch.tensor([[[[-1., 0, +1.],
+                                 [-2., 0, +2.],
+                                 [-1., 0, +1.]]]], requires_grad = True) / 8.)
+        sobel_y = (torch.tensor([[[[-1., -2., -1.],
                                  [0, 0, 0],
-                                 [+1, +2, +1]]).float() / 8)[None, ...]
-        idt = torch.tensor([[0, 0, 0],
-                            [0, 1, 0],
-                            [0, 0, 0]]).float()[None, ...]
+                                 [+1., +2., +1.]]]], requires_grad = True) / 8.)
+        idt = torch.tensor([[[[0, 0, 0],
+                            [0, 1., 0],
+                            [0, 0, 0]]]], requires_grad = True)
 
         self.kernel = torch.stack([idt,
                                    sobel_x,
                                    sobel_y],
                                   dim=0).repeat(channels,
-                                                channels, 1, 1)
+                                                channels, 1, 1) / channels
         self.perception = nn.Conv2d(channels, channels * 3,
                                     kernel_size=3, bias=False,
                                     padding=1)

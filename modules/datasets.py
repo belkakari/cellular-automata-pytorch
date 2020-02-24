@@ -30,9 +30,9 @@ class StateGridSet(Dataset):
         return self.batch_size
 
     def __getitem__(self, idx):
-        state_grid = torch.zeros((16, self.target.shape[-2],
+        state_grid = torch.ones((16, self.target.shape[-2],
                                  self.target.shape[-1]),
-                                 requires_grad=False)
+                                 requires_grad=False) * -1.
         if self.random_spawn:
             center = random.randint(int(0.2 * (self.target.shape[-2] - 1)),
                                     int(0.8 * (self.target.shape[-2] - 1)))

@@ -45,9 +45,9 @@ class SimpleCA(AbstractCAModel):
         mask = utils.stochastic_update_mask(ds_grid,
                                             prob=self.stochastic_prob)
         self.state_grid = self.state_grid + ds_grid * mask
-        alive_post = utils.alive_mask((self.state_grid + 1.) / 2., thr=0.1)
-        final_mask = (alive_post.bool() & alive_pre.bool()).float()
-        self.state_grid = self.state_grid * final_mask
+        #alive_post = utils.alive_mask((self.state_grid + 1.) / 2., thr=0.1)
+        #final_mask = (alive_post.bool() & alive_pre.bool()).float()
+        #self.state_grid = self.state_grid * final_mask
 
         if self.use_coords:
             xgrid = torch.linspace(-1, 1, steps=self.target.shape[-1])

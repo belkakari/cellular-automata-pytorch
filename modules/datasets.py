@@ -47,4 +47,6 @@ class StateGridSet(Dataset):
             state_grid[-1] = xv
             state_grid[-2] = yv
 
-        return state_grid, self.emojis[idx]
+        self.target = self.emojis[idx]
+
+        return state_grid, self.target

@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 
 class Perception(nn.Module):
-    def __init__(self, channels=16):
+    def __init__(self, channels=16, norm_kernel=False):
         super().__init__()
         sobel_x = (torch.tensor([[[[-1., 0, +1.],
                                  [-2., 0, +2.],
@@ -20,7 +20,9 @@ class Perception(nn.Module):
                                  sobel_x,
                                  sobel_y],
                                  dim=0).repeat(channels,
-                                               channels, 1, 1) / channels
+                                               channels, 1, 1)
+        if norm_kernel:
+            self.kernel /= channels
         self.perception = nn.Conv2d(channels, channels * 3,
                                     kernel_size=3, bias=False,
                                     padding=1)

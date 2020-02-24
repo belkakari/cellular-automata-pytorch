@@ -36,6 +36,7 @@ split_rate_interval = config['split_rate_interval']
 test_frequency = config['test_frequency']
 use_coords = config['model']['use_coords']
 random_spawn = config['model']['random_spawn']
+norm_kernel = config['model']['norm_kernel']
 
 set_random_seed(10)
 
@@ -56,7 +57,8 @@ setup_logger('base', output_folder,
 
 logger = logging.getLogger('base')
 
-perception = Perception(channels=16).to(device)
+perception = Perception(channels=16,
+                        norm_kernel=norm_kernel).to(device)
 policy = Policy(use_embedding=False, kernel=1, padding=0).to(device)
 
 model = SimpleCA(perception, policy, config, logger=logger,

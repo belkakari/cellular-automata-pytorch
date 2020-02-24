@@ -1,12 +1,13 @@
 import io
-import os
 import logging
+import os
+import random
 from time import gmtime, strftime
 
+import numpy as np
 import requests
 import torch
 from PIL import Image
-import numpy as np
 from torchvision import transforms
 
 

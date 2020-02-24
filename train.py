@@ -5,20 +5,19 @@ import logging
 import os
 import random
 import shutil
-import yaml
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import yaml
 from torch.optim import lr_scheduler
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
 from modules.datasets import StateGridSet
-from modules.networks import Perception, Policy
 from modules.models import SimpleCA
-from modules.utils import get_timestamp, load_emoji, setup_logger, set_random_seed
-
+from modules.networks import Perception, Policy
+from modules.utils import get_timestamp, set_random_seed, setup_logger
 
 parser = argparse.ArgumentParser(description='Train neural cellular automata')
 parser.add_argument('-c', '--config', type=str,
@@ -57,29 +56,25 @@ setup_logger('base', output_folder,
 
 logger = logging.getLogger('base')
 
-img = load_emoji(emoji='🦎')
-img = transforms.ToTensor()(img)
-img = transforms.Normalize(tuple(0.5 for _ in range(img.shape[0])),
-                           tuple(0.5 for _ in range(img.shape[0])))(img)
-img = img.to(device)
-
 perception = Perception(channels=16).to(device)
 policy = Policy(use_embedding=False, kernel=1, padding=0).to(device)
 
 model = SimpleCA(perception, policy, config, logger=logger,
                  grad_clip=config['optim']['grad_clip'])
 
-dset = StateGridSet(img, use_coords=use_coords,
+dset = StateGridSet(emoji='🦎', use_coords=use_coords,
                     batch_size=batch_size,
-                    random_spawn=random_spawn)
-dset_test = StateGridSet(img, use_coords=use_coords,
+                    random_spawn=random_spawn,
+                    pad=50, target_size=128)
+dset_test = StateGridSet(emoji='🦎', use_coords=use_coords,
                          batch_size=1,
-                         random_spawn=False)
+                         random_spawn=False,
+                         pad=50, target_size=128)
 dloader = DataLoader(dset, batch_size=batch_size)
 dloader_test = DataLoader(dset, batch_size=1)
 
-xv, yv = torch.meshgrid([torch.linspace(-1, 1, steps=img.shape[-1]),
-                         torch.linspace(-1, 1, steps=img.shape[-2])])
+xv, yv = torch.meshgrid([torch.linspace(-1, 1, steps=dset.target.shape[-1]),
+                         torch.linspace(-1, 1, steps=dset.target.shape[-2])])
 
 with torch.autograd.detect_anomaly():
     for epoch in range(num_epochs):
@@ -88,9 +83,10 @@ with torch.autograd.detect_anomaly():
         if split_rate_interval:
             split_rate = random.randint(*split_rate_interval)
         for state_grid, target in dloader:
+            state_grid, target = state_grid.to(device), target.to(device)
             model.get_input(state_grid, target)
             for k in range(n_steps):
-                model.forward()
+                final_mask = model.forward()
                 if split_rate and (k % split_rate == 0):  # truncated bptt
                     loss_value = model.optimize_parameters()
                     state_grid = model.state_grid.detach()
@@ -110,11 +106,16 @@ with torch.autograd.detect_anomaly():
             topil = transforms.ToPILImage()
             with torch.no_grad():
                 for k, (state_grid, target) in enumerate(dloader_test):
-                    topil(target[0].cpu()).save(os.path.join(output_folder, f'target.png'))
+                    topil(target[0].cpu()).save(os.path.join(output_folder,
+                                                             f'target.png'))
                     imgs = []
+                    masks = []
                     model.get_input(state_grid, target)
                     for _ in range(150):
-                        model.forward()
+                        final_mask = model.forward()
                         imgs.append(topil(model.state_grid[0, :4, ...].cpu()))
+                        masks.append(topil(final_mask[0, :, ...].cpu()))
                     imgs[0].save(os.path.join(output_path, f'{k}.gif'),
-                                save_all=True, append_images=imgs[1:])
+                                 save_all=True, append_images=imgs[1:])
+                    masks[0].save(os.path.join(output_path, f'{k}_mask.gif'),
+                                  save_all=True, append_images=imgs[1:])

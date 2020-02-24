@@ -56,6 +56,9 @@ class SimpleCA(AbstractCAModel):
             self.state_grid[:, -1, ...] = xv[None, :, :]
             self.state_grid[:, -2, ...] = yv[None, :, :]
 
+        return final_mask
+
+
     def optimize_parameters(self):
         loss_value = self.loss_fn(self.target[:, :4, ...],
                                   self.state_grid[:, :4, ...])

@@ -107,7 +107,7 @@ with torch.autograd.detect_anomaly():
             with torch.no_grad():
                 for k, (state_grid, target) in enumerate(dloader_test):
                     state_grid, target = state_grid.to(device), target.to(device)
-                    topil(target[0].cpu()).save(os.path.join(output_folder,
+                    topil((target[0].cpu() + 1.) / 2.).save(os.path.join(output_folder,
                                                              f'target.png'))
                     imgs = []
                     masks = []

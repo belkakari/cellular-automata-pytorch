@@ -11,7 +11,7 @@ class Perception(nn.Module):
                                  [-1, 0, +1]]).float() / 8)[None, ...]
         sobel_y = (torch.tensor([[-1, -2, -1],
                                  [0, 0, 0],
-                                 [-1, -2, -1]]).float() / 8)[None, ...]
+                                 [+1, +2, +1]]).float() / 8)[None, ...]
         idt = torch.tensor([[0, 0, 0],
                             [0, 1, 0],
                             [0, 0, 0]]).float()[None, ...]

@@ -21,7 +21,7 @@ def stochastic_update_mask(ds_grid, prob=0.5):
 
 def alive_mask(state_grid, thr=0.1):
     # Take the alpha channel as the measure of “life”.
-    alive = (state_grid[:, 4, :, :].clamp(0, 1) > thr).float().unsqueeze(1)
+    alive = (state_grid[:, 3, :, :].clamp(0, 1) > thr).float().unsqueeze(1)
     return alive
 
 

@@ -60,7 +60,7 @@ perception = Perception(channels=16).to(device)
 policy = Policy(use_embedding=False, kernel=1, padding=0).to(device)
 
 model = SimpleCA(perception, policy, config, logger=logger,
-                 grad_clip=config['optim']['grad_clip']).to(device)
+                 grad_clip=config['optim']['grad_clip'])
 
 dset = StateGridSet(emoji='🦎', use_coords=use_coords,
                     batch_size=batch_size,
@@ -106,6 +106,7 @@ with torch.autograd.detect_anomaly():
             topil = transforms.ToPILImage()
             with torch.no_grad():
                 for k, (state_grid, target) in enumerate(dloader_test):
+                    state_grid, target = state_grid.to(device), target.to(device)
                     topil(target[0].cpu()).save(os.path.join(output_folder,
                                                              f'target.png'))
                     imgs = []

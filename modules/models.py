@@ -41,6 +41,9 @@ class SimpleCA(AbstractCAModel):
     def forward(self):
         alive_pre = utils.alive_mask((self.state_grid + 1.) / 2., thr=0.1)
         perception_grid = self.perception(self.state_grid)
+        perception_grid = perception_grid + torch.abs(perception_grid.min())
+        perception_grid = perception_grid / perception_grid.max()
+        perception_grid = perception_grid * 2. - 1.
         ds_grid = self.policy(perception_grid)
         mask = utils.stochastic_update_mask(ds_grid,
                                             prob=self.stochastic_prob)

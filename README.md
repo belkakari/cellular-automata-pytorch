@@ -1,6 +1,8 @@
 # cellular-automata-pytorch
 
-An attempt to recreate results of https://distill.pub/2020/growing-ca/
+WiP
+
+An attempt to recreate the results of https://distill.pub/2020/growing-ca/
 
 Related:
 

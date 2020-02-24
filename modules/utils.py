@@ -41,28 +41,6 @@ def load_emoji(emoji):
     return load_image(url)
 
 
-def test(policy, perception, dloader_test,
-         output_path, num_steps=150, stochastic_prob=0.1):
-    imgs = []
-    topil = transforms.ToPILImage()
-    with torch.no_grad():
-        for k, (state_grid, _) in enumerate(dloader_test):
-            for _ in range(num_steps):
-                imgs.append(topil(state_grid[0, :4, ...].cpu()))
-                alive_pre = alive_mask((state_grid + 1.) / 2., thr=0.1)
-                perception_grid = perception(state_grid)
-                ds_grid = policy(perception_grid)
-                mask = stochastic_update_mask(ds_grid,
-                                              prob=stochastic_prob)
-                state_grid = state_grid + ds_grid * mask
-                alive_post = alive_mask((state_grid + 1.) / 2., thr=0.1)
-                final_mask = (alive_post.bool() & alive_pre.bool()).float()
-                state_grid = state_grid * final_mask
-            imgs.append(topil(state_grid[0, :4, ...].cpu()))
-            imgs[0].save(os.path.join(output_path, f'{k}.gif'),
-                         save_all=True, append_images=imgs[1:])
-
-
 def get_timestamp():
     return strftime("%Y-%m-%d-%H:%M:%S", gmtime())
 

@@ -39,14 +39,14 @@ class SimpleCA(AbstractCAModel):
         self.grad_clip = grad_clip
 
     def forward(self):
-        #alive_pre = utils.alive_mask((self.state_grid + 1.) / 2., thr=0.1)
+        alive_pre = utils.alive_mask((self.state_grid + 1.) / 2., thr=0.1)
         perception_grid = self.perception(self.state_grid)
         ds_grid = self.policy(perception_grid)
         mask = utils.stochastic_update_mask(ds_grid,
                                             prob=self.stochastic_prob)
         self.state_grid = self.state_grid + ds_grid * mask
         alive_post = utils.alive_mask((self.state_grid + 1.) / 2., thr=0.1)
-        final_mask = alive_post.float() #(alive_post.bool() & alive_pre.bool()).float()
+        final_mask = (alive_post.bool() & alive_pre.bool()).float()
         self.state_grid = self.state_grid * final_mask
 
         if self.use_coords:

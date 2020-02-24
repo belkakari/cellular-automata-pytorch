@@ -41,8 +41,8 @@ class Policy(nn.Module):
             dim += 1
         self.conv1 = nn.Conv2d(dim, interm_dim, kernel, padding=padding)
         self.conv2 = nn.Conv2d(interm_dim, state_dim, kernel, padding=padding)
-        nn.init.constant_(self.conv2.weight, 0.)
-        nn.init.constant_(self.conv2.bias, 0.)
+        #nn.init.constant_(self.conv2.weight, 0.)
+        #nn.init.constant_(self.conv2.bias, 0.)
 
     def forward(self, state):
         interm = self.conv1(state)

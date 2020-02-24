@@ -119,7 +119,7 @@ with torch.autograd.detect_anomaly():
                     for _ in range(150):
                         final_mask = model.forward()
                         imgs.append(topil((model.state_grid[0, :4, ...].cpu() + 1.) / 2.))
-                        masks.append(topil((final_mask[0, :, ...].cpu() + 1. / 2.)))
+                        masks.append(topil(final_mask[0, :, ...].cpu()))
                     imgs[0].save(os.path.join(output_path, f'{k}.gif'),
                                  save_all=True, append_images=imgs[1:])
                     masks[0].save(os.path.join(output_path, f'{k}_mask.gif'),

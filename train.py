@@ -108,7 +108,7 @@ for epoch in range(num_epochs):
         topil = transforms.ToPILImage()
         with torch.no_grad():
             for k, (state_grid, target) in enumerate(dloader_test):
-                topil(target[0].cpu()).save(os.path.join(output_path, f'target.jpg'))
+                topil(target[0].cpu()).save(os.path.join(output_folder, f'target.png'))
                 imgs = []
                 model.get_input(state_grid, target)
                 for _ in range(150):

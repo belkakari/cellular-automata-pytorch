@@ -29,7 +29,8 @@ class SimpleCA(AbstractCAModel):
         self.config = config
         self.use_coords = config['model']['use_coords']
         self.stochastic_prob = config['model']['stochastic_prob']
-        self.optim = torch.optim.Adam(self.policy.parameters(),
+        self.optim = torch.optim.Adam(list(self.policy.parameters()) + 
+                                      list(self.perception.parameters()),
                                       lr=config['optim']['lr'])
         self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optim,
                                                 config['optim']['milestones'],

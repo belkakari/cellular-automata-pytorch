@@ -1,10 +1,10 @@
 experiment_name: 'time'
 device: 'cuda:0'
 output_folder: ./outputs/
-n_steps_interval: [64, 92]
+n_steps_interval: [64, 64]
 split_rate_interval: ~ #[60, 90]
-test_frequency: 100
-logging_level: INFO
+test_frequency: 1
+logging_level: DEBUG
 emoji: 🦋
 model:
   use_coords: False  # whether to pass meshgrid as a feature
@@ -14,7 +14,7 @@ model:
   interm_dim: 128
 train:
   batch_size: 4
-  num_epochs: 8000
+  num_epochs: 50
 optim:
   milestones: [2000]
   gamma: 0.1

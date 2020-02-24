@@ -3,7 +3,7 @@ device: 'cuda:0'
 output_folder: ./outputs/
 n_steps_interval: [60, 90]
 split_rate_interval: ~ #[60, 90]
-test_frequency: 500
+test_frequency: 100
 logging_level: DEBUG
 model:
   use_coords: False  # whether to pass meshgrid as a feature

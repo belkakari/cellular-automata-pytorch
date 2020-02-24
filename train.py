@@ -17,7 +17,7 @@ from torchvision import transforms
 from modules.datasets import StateGridSet
 from modules.networks import Perception, Policy
 from modules.models import SimpleCA
-from modules.utils import get_timestamp, load_emoji, setup_logger
+from modules.utils import get_timestamp, load_emoji, setup_logger, set_random_seed
 
 
 parser = argparse.ArgumentParser(description='Train neural cellular automata')
@@ -38,6 +38,7 @@ test_frequency = config['test_frequency']
 use_coords = config['model']['use_coords']
 random_spawn = config['model']['random_spawn']
 
+set_random_seed(10)
 
 if (config['experiment_name'] == 'time') or \
    ('experiment_name' not in config.keys()):

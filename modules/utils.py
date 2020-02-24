@@ -28,10 +28,10 @@ def alive_mask(state_grid, thr=0.1):
 def load_image(url, max_size=128):
     r = requests.get(url)
     img = Image.open(io.BytesIO(r.content))
-    img.thumbnail((max_size, max_size), Image.ANTIALIAS)
-    img = np.float32(img) / 255.
-    # premultiply RGB by Alpha
-    img[..., :3] *= img[..., 3:]
+    #img.thumbnail((max_size, max_size), Image.ANTIALIAS)
+    #img = np.float32(img) / 255.
+    ## premultiply RGB by Alpha
+    #img[..., :3] *= img[..., 3:]
     return img
 
 

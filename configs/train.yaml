@@ -6,7 +6,7 @@ split_rate_interval: ~ #[60, 90]
 test_frequency: 500
 logging_level: DEBUG
 model:
-  use_coords: True  # whether to pass meshgrid as a feature
+  use_coords: False  # whether to pass meshgrid as a feature
   random_spawn: False  # randomly select initial cell coordinates
   stochastic_prob: 0.5
 train:

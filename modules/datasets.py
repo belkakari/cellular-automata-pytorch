@@ -10,8 +10,8 @@ class StateGridSet(Dataset):
                  batch_size=10, random_spawn=True,
                  pad=50, target_size=128):
         # TODO: refactor padding/resize
-        self.target = F.pad(target, (0, pad, 0, pad))
-        self.target = F.interpolate(self.target.unsqueeze(0), 
+        self.target = F.pad(target, (pad, pad, pad, pad), value=-1)
+        self.target = F.interpolate(self.target.unsqueeze(0),
                                     (target_size, target_size))[0]
         self.use_coords = use_coords
         self.batch_size = batch_size
@@ -21,10 +21,10 @@ class StateGridSet(Dataset):
         return self.batch_size
 
     def __getitem__(self, idx):
-        state_grid = torch.zeros((16, self.target.shape[-2],
-                                  self.target.shape[-1]),
+        state_grid = torch.ones((16, self.target.shape[-2],
+                                 self.target.shape[-1]),
                                  requires_grad=False,
-                                 device=self.target.device)
+                                 device=self.target.device) * -1
         if self.random_spawn:
             center = random.randint(int(0.2 * (self.target.shape[-2] - 1)),
                                     int(0.8 * (self.target.shape[-2] - 1)))

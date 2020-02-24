@@ -15,6 +15,6 @@ train:
 optim:
   milestones: [2000]
   gamma: 0.1
-  lr: 0.0005
-  grad_clip: 200
+  lr: 0.0001
+  grad_clip: 50
 

@@ -11,8 +11,8 @@ class StateGridSet(Dataset):
     def __init__(self, emoji='🦎', use_coords=False,
                  batch_size=10, random_spawn=True,
                  pad=50, target_size=128):
-        # TODO: refactor padding/resize
 
+        emojis = ['🦎', '😀', '💥', '👁', '🐠', '🦋', '🐞', '🕸', '🥨', '🎄']
         self.transform = [transforms.Pad(pad),
                           transforms.Resize(target_size),
                           transforms.ToTensor(),
@@ -20,14 +20,14 @@ class StateGridSet(Dataset):
                                                (.5, .5, .5, .5))]
         self.transform = transforms.Compose(self.transform)
 
-        self.target = self.transform(load_emoji(emoji=emoji))
+        self.emojis = [self.transform(load_emoji(emoji=emoji)) for emoji in emojis]
 
         self.use_coords = use_coords
         self.batch_size = batch_size
         self.random_spawn = random_spawn
 
     def __len__(self):
-        return self.batch_size
+        return len(self.emojis)
 
     def __getitem__(self, idx):
         state_grid = torch.ones((16, self.target.shape[-2],
@@ -46,4 +46,4 @@ class StateGridSet(Dataset):
             state_grid[-1] = xv
             state_grid[-2] = yv
 
-        return state_grid, self.target
+        return state_grid, self.emojis[idx]

@@ -30,7 +30,8 @@ class StateGridSet(Dataset):
                                     int(0.8 * (self.target.shape[-2] - 1)))
         else:
             center = state_grid.shape[2] // 2
-        state_grid[3:, center, center] += 1.
+        state_grid[:3, ...] = 1.
+        state_grid[3:, center, center] = 1.
 
         if self.use_coords:
             xv, yv = torch.meshgrid([torch.linspace(-1, 1, steps=128),

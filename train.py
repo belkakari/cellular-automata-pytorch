@@ -5,6 +5,7 @@ import logging
 import os
 import random
 import shutil
+import yaml
 
 import torch
 import torch.nn as nn

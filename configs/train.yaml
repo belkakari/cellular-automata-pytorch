@@ -1,11 +1,11 @@
 experiment_name: 'time'
 device: 'cuda:0'
 output_folder: ./outputs/
-n_steps_interval: [60, 90]
-split_rate_interval: ~ #[60, 90]
+n_steps_interval: [200, 300]
+split_rate_interval: [60, 90]
 test_frequency: 100
 logging_level: DEBUG
-emoji: 🥨
+emoji: 🦋
 model:
   use_coords: False  # whether to pass meshgrid as a feature
   random_spawn: False  # randomly select initial cell coordinates
@@ -17,6 +17,5 @@ train:
 optim:
   milestones: [2000]
   gamma: 0.1
-  lr: 0.00025
+  lr: 0.0005
   grad_clip: 10
-

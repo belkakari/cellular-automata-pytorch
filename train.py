@@ -37,6 +37,7 @@ test_frequency = config['test_frequency']
 use_coords = config['model']['use_coords']
 random_spawn = config['model']['random_spawn']
 norm_kernel = config['model']['norm_kernel']
+interm_dim = config['model']['interm_dim']
 
 set_random_seed(10)
 
@@ -59,7 +60,8 @@ logger = logging.getLogger('base')
 
 perception = Perception(channels=16,
                         norm_kernel=norm_kernel).to(device)
-policy = Policy(use_embedding=False, kernel=1, padding=0).to(device)
+policy = Policy(use_embedding=False, kernel=1, padding=0,
+                interm_dim=interm_dim).to(device)
 
 model = SimpleCA(perception, policy, config, logger=logger,
                  grad_clip=config['optim']['grad_clip'])

@@ -12,8 +12,7 @@ class StateGridSet(Dataset):
     def __init__(self, emoji='🦎', use_coords=False,
                  batch_size=10, random_spawn=True,
                  pad=50, target_size=128):
-
-        emojis = ['🦎'] #, '😀', '💥', '👁', '🐠', '🦋', '🐞', '🕸', '🥨', '🎄']
+        # emojis = ['🦎', '😀', '💥', '👁', '🐠', '🦋', '🐞', '🕸', '🥨', '🎄']
         self.transform = [transforms.Pad(pad),
                           transforms.Resize(target_size),
                           transforms.ToTensor(),
@@ -21,19 +20,19 @@ class StateGridSet(Dataset):
                                                (.5, .5, .5, .5))]
         self.transform = transforms.Compose(self.transform)
 
-        self.emojis = [self.transform(load_emoji(emoji=emoji)) for emoji in emojis]
+        self.target = self.transform(load_emoji(emoji=emoji))
 
         self.use_coords = use_coords
         self.batch_size = batch_size
         self.random_spawn = random_spawn
 
     def __len__(self):
-        return len(self.emojis)
+        return self.batch_size
 
     def __getitem__(self, idx):
         state_grid = torch.ones((16, self.target.shape[-2],
                                  self.target.shape[-1]),
-                                 requires_grad=False) * -1.
+                                requires_grad=False) * -1.
         if self.random_spawn:
             center = random.randint(int(0.2 * (self.target.shape[-2] - 1)),
                                     int(0.8 * (self.target.shape[-2] - 1)))
@@ -46,7 +45,5 @@ class StateGridSet(Dataset):
                                      torch.linspace(-1, 1, steps=128)])
             state_grid[-1] = xv
             state_grid[-2] = yv
-
-        self.target = self.emojis[idx]
 
         return state_grid, self.target

@@ -71,8 +71,11 @@ class SimpleCA(AbstractCAModel):
                 norm.append(param_norm.item())
             self.logger.debug(f'norm before clipping, {norm}')
 
-        torch.nn.utils.clip_grad_norm_(self.policy.parameters(),
-                                       max_norm=self.grad_clip)
+        #torch.nn.utils.clip_grad_norm_(self.policy.parameters(),
+        #                               max_norm=self.grad_clip)
+        for p in self.policy.parameters():
+            p.grad.data /= (p.grad.data.norm(2) + 1e-8)
+
         if self.logger:
             norm = []
             for p in self.policy.parameters():

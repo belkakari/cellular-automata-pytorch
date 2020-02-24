@@ -119,4 +119,4 @@ with torch.autograd.detect_anomaly():
                     imgs[0].save(os.path.join(output_path, f'{k}.gif'),
                                  save_all=True, append_images=imgs[1:])
                     masks[0].save(os.path.join(output_path, f'{k}_mask.gif'),
-                                  save_all=True, append_images=imgs[1:])
+                                  save_all=True, append_images=masks[1:])

@@ -82,17 +82,19 @@ xv, yv = torch.meshgrid([torch.linspace(-1, 1, steps=img.shape[-1]),
 
 for epoch in range(num_epochs):
     n_steps = random.randint(*n_steps_interval)
-    split_rate = random.randint(*split_rate_interval)
+    split_rate = None
+    if split_rate_interval:
+        split_rate = random.randint(*split_rate_interval)
     for state_grid, target in dloader:
         model.get_input(state_grid, target)
         for k in range(n_steps):
             model.forward()
-            if k % split_rate == 0:
+            if split_rate and (k % split_rate == 0):  # truncated bptt
                 loss_value = model.optimize_parameters()
                 state_grid = model.state_grid.detach()
                 model.get_input(state_grid, target)
 
-    if k % split_rate == 0:
+    if split_rate and (k % split_rate == 0):
         pass
     else:
         loss_value = model.optimize_parameters()

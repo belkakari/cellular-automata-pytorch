@@ -1,8 +1,8 @@
 experiment_name: 'time'
 device: 'cuda:0'
 output_folder: ./outputs/
-n_steps_interval: [180, 240]
-split_rate_interval: [60, 90]
+n_steps_interval: [60, 90]
+split_rate_interval: None #[60, 90]
 test_frequency: 100
 logging_level: DEBUG
 model:

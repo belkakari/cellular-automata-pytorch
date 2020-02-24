@@ -5,6 +5,7 @@ n_steps_interval: [60, 90]
 split_rate_interval: ~ #[60, 90]
 test_frequency: 100
 logging_level: DEBUG
+emoji: 🥨
 model:
   use_coords: False  # whether to pass meshgrid as a feature
   random_spawn: False  # randomly select initial cell coordinates

@@ -20,7 +20,7 @@ class StateGridSet(Dataset):
                                                (.5, .5, .5, .5))]
         self.transform = transforms.Compose(self.transform)
 
-        self.target = self.transform(load_emoji(emoji='🦎'))
+        self.target = self.transform(load_emoji(emoji=emoji))
 
         self.use_coords = use_coords
         self.batch_size = batch_size

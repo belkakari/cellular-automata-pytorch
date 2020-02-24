@@ -62,11 +62,11 @@ policy = Policy(use_embedding=False, kernel=1, padding=0).to(device)
 model = SimpleCA(perception, policy, config, logger=logger,
                  grad_clip=config['optim']['grad_clip'])
 
-dset = StateGridSet(emoji='🥨', use_coords=use_coords,
+dset = StateGridSet(emoji=config['emoji'], use_coords=use_coords,
                     batch_size=batch_size,
                     random_spawn=random_spawn,
                     pad=50, target_size=128)
-dset_test = StateGridSet(emoji='🥨', use_coords=use_coords,
+dset_test = StateGridSet(emoji=config['emoji'], use_coords=use_coords,
                          batch_size=1,
                          random_spawn=False,
                          pad=50, target_size=128)

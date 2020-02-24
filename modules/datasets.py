@@ -7,12 +7,13 @@ from torch.utils.data import Dataset
 
 from modules.utils import load_emoji
 
+
 class StateGridSet(Dataset):
     def __init__(self, emoji='🦎', use_coords=False,
                  batch_size=10, random_spawn=True,
                  pad=50, target_size=128):
 
-        emojis = ['🦎', '😀', '💥', '👁', '🐠', '🦋', '🐞', '🕸', '🥨', '🎄']
+        emojis = ['🦎'] #, '😀', '💥', '👁', '🐠', '🦋', '🐞', '🕸', '🥨', '🎄']
         self.transform = [transforms.Pad(pad),
                           transforms.Resize(target_size),
                           transforms.ToTensor(),

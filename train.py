@@ -60,10 +60,9 @@ setup_logger('base', output_folder,
 logger = logging.getLogger('base')
 
 perception = Perception(channels=16,
-                        norm_kernel=norm_kernel,
-                        bias=bias).to(device)
+                        norm_kernel=norm_kernel).to(device)
 policy = Policy(use_embedding=False, kernel=1, padding=0,
-                interm_dim=interm_dim).to(device)
+                interm_dim=interm_dim, bias=bias).to(device)
 
 model = SimpleCA(perception, policy, config, logger=logger,
                  grad_clip=config['optim']['grad_clip'])

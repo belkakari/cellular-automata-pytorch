@@ -45,7 +45,7 @@ class Policy(nn.Module):
     def forward(self, state):
         interm = self.conv1(state)
         interm = nn.ReLU()(interm)
-        return self.conv2(interm)
+        return torch.tanh(self.conv2(interm))
 
 
 class Embedder(nn.Module):

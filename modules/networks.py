@@ -22,7 +22,7 @@ class Perception(nn.Module):
                                   dim=0).repeat(channels,
                                                 channels, 1, 1)
         self.perception = nn.Conv2d(channels, channels * 3,
-                                    kernel_size=1, bias=False,
+                                    kernel_size=3, bias=False,
                                     padding=1)
         self.perception.weight = nn.Parameter(self.kernel)
 

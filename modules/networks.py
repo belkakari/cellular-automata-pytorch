@@ -34,13 +34,15 @@ class Perception(nn.Module):
 
 class Policy(nn.Module):
     def __init__(self, state_dim=16, interm_dim=128,
-                 use_embedding=True, kernel=1, padding=0):
+                 use_embedding=True, kernel=1, padding=0,
+                 bias=False):
         super().__init__()
         dim = state_dim * 3
         if use_embedding:
             dim += 1
         self.conv1 = nn.Conv2d(dim, interm_dim, kernel, padding=padding)
-        self.conv2 = nn.Conv2d(interm_dim, state_dim, kernel, padding=padding, bias=False)
+        self.conv2 = nn.Conv2d(interm_dim, state_dim, kernel, padding=padding,
+                               bias=bias)
         nn.init.constant_(self.conv2.weight, 0.)
         #nn.init.constant_(self.conv2.bias, 0.)
 

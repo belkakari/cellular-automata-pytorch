@@ -7,6 +7,7 @@ from time import gmtime, strftime
 import numpy as np
 import requests
 import torch
+import torch.nn as nn
 from PIL import Image
 from torchvision import transforms
 
@@ -21,7 +22,8 @@ def stochastic_update_mask(ds_grid, prob=0.5):
 
 def alive_mask(state_grid, thr=0.1):
     # Take the alpha channel as the measure of “life”.
-    alive = (state_grid[:, 3, :, :].clamp(0, 1) > thr).float().unsqueeze(1)
+    alpha = state_grid[:, [3], :, :].clamp(0, 1)
+    alive = (nn.MaxPool2d(3, stride=1, padding=1)(alpha) > thr).float()#.unsqueeze(1)
     return alive
 
 
@@ -29,9 +31,9 @@ def load_image(url, max_size=128):
     r = requests.get(url)
     img = Image.open(io.BytesIO(r.content))
     #img.thumbnail((max_size, max_size), Image.ANTIALIAS)
-    #img = np.float32(img) / 255.
+    img = np.float32(img) / 255.
     ## premultiply RGB by Alpha
-    #img[..., :3] *= img[..., 3:]
+    img[..., :3] *= img[..., 3:]
     return img
 
 

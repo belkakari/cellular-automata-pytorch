@@ -68,61 +68,62 @@ policy = Policy(use_embedding=False, kernel=1, padding=0,
 model = SimpleCA(perception, policy, config, logger=logger,
                  grad_clip=config['optim']['grad_clip'])
 
-dset = StateGridSet(emoji=config['emoji'], use_coords=use_coords,
+dset = StateGridSet(emoji=config['data']['emoji'], use_coords=use_coords,
                     batch_size=batch_size,
                     random_spawn=random_spawn,
-                    pad=50, target_size=128)
-dset_test = StateGridSet(emoji=config['emoji'], use_coords=use_coords,
+                    pad=config['data']['pad'],
+                    target_size=config['data']['target_size'])
+dset_test = StateGridSet(emoji=config['data']['emoji'], use_coords=use_coords,
                          batch_size=1,
                          random_spawn=False,
-                         pad=50, target_size=128)
+                         pad=config['data']['pad'],
+                         target_size=config['data']['target_size'])
 dloader = DataLoader(dset, batch_size=batch_size)
 dloader_test = DataLoader(dset, batch_size=1)
 
 xv, yv = torch.meshgrid([torch.linspace(-1, 1, steps=dset.target.shape[-1]),
                          torch.linspace(-1, 1, steps=dset.target.shape[-2])])
 
-with torch.autograd.detect_anomaly():
-    for epoch in range(num_epochs):
-        n_steps = random.randint(*n_steps_interval)
-        split_rate = None
-        if split_rate_interval:
-            split_rate = random.randint(*split_rate_interval)
-        for state_grid, target in dloader:
-            state_grid, target = state_grid.to(device), target.to(device)
-            model.get_input(state_grid, target)
-            for k in range(n_steps):
-                final_mask = model.forward()
-                if split_rate and (k % split_rate == 0):  # truncated bptt
-                    loss_value = model.optimize_parameters()
-                    state_grid = model.state_grid.detach()
-                    model.get_input(state_grid, target)
+for epoch in range(num_epochs):
+    n_steps = random.randint(*n_steps_interval)
+    split_rate = None
+    if split_rate_interval:
+        split_rate = random.randint(*split_rate_interval)
+    for state_grid, target in dloader:
+        state_grid, target = state_grid.to(device), target.to(device)
+        model.get_input(state_grid, target)
+        for k in range(n_steps):
+            final_mask = model.forward()
+            if split_rate and (k % split_rate == 0):  # truncated bptt
+                loss_value = model.optimize_parameters()
+                state_grid = model.state_grid.detach()
+                model.get_input(state_grid, target)
 
-        if split_rate and (k % split_rate == 0):
-            pass
-        else:
-            loss_value = model.optimize_parameters()
+    if split_rate and (k % split_rate == 0):
+        pass
+    else:
+        loss_value = model.optimize_parameters()
 
-        logger.info(f'{loss_value.item():.2f}, {n_steps} steps, {split_rate} split rate, {epoch} epoch')
+    logger.info(f'{loss_value.item():.2f}, {n_steps} steps, {split_rate} split rate, {epoch} epoch')
 
-        if epoch % test_frequency == 0:
-            output_path = os.path.join(output_folder, f'{epoch}/')
-            logger.info(f'writing gif to {output_path}')
-            os.makedirs(output_path, exist_ok=True)
-            topil = transforms.ToPILImage()
-            with torch.no_grad():
-                for k, (state_grid, target) in enumerate(dloader_test):
-                    state_grid, target = state_grid.to(device), target.to(device)
-                    topil((target[0].cpu() + 1.) / 2.).save(os.path.join(output_folder,
-                                                             f'target.png'))
-                    imgs = []
-                    masks = []
-                    model.get_input(state_grid, target)
-                    for _ in range(150):
-                        final_mask = model.forward()
-                        imgs.append(topil((model.state_grid[0, :4, ...].cpu() + 1.) / 2.))
-                        masks.append(topil(final_mask[0, :, ...].cpu()))
-                    imgs[0].save(os.path.join(output_path, f'{k}.gif'),
-                                 save_all=True, append_images=imgs[1:])
-                    masks[0].save(os.path.join(output_path, f'{k}_mask.gif'),
-                                  save_all=True, append_images=masks[1:])
+    if epoch % test_frequency == 0:
+        output_path = os.path.join(output_folder, f'{epoch}/')
+        logger.info(f'writing gif to {output_path}')
+        os.makedirs(output_path, exist_ok=True)
+        topil = transforms.ToPILImage()
+        with torch.no_grad():
+            for k, (state_grid, target) in enumerate(dloader_test):
+                state_grid, target = state_grid.to(device), target.to(device)
+                topil(target[0].cpu()).save(os.path.join(output_folder,
+                                                            f'target.png'))
+                imgs = []
+                masks = []
+                model.get_input(state_grid, target)
+                for _ in range(150):
+                    final_mask = model.forward()
+                    imgs.append(topil(model.state_grid[0, :4, ...].cpu()))
+                    masks.append(topil(final_mask[0, :, ...].cpu()))
+                imgs[0].save(os.path.join(output_path, f'{k}.gif'),
+                                save_all=True, append_images=imgs[1:])
+                masks[0].save(os.path.join(output_path, f'{k}_mask.gif'),
+                                save_all=True, append_images=masks[1:])

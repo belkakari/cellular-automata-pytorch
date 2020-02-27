@@ -17,18 +17,47 @@ class Perception(nn.Module):
                                  [0.0, 1.0, 0.0],
                                  [0.0, 0.0, 0.0]])
 
-        self.kernel =  torch.stack((identity, sobel_x, sobel_y)).repeat(channels, 1, 1).unsqueeze(1)
+        self.kernel = torch.stack((identity, sobel_x, sobel_y)).repeat(channels, 1, 1).unsqueeze(1)
         if norm_kernel:
             self.kernel /= channels
 
+        self.kernel = nn.Parameter(self.kernel)
+
+        self.perception = nn.Conv2d(self.channels, self.channels * 3, 3,
+                                    padding=1, groups=self.channels,
+                                    bias=False)
+        self.perception.weight = self.kernel
+
     def forward(self, state_grid):
-        return F.conv2d(state_grid, 
-                        self.kernel.to(state_grid.device), 
-                        groups=self.channels,
-                        padding=1)  # thanks https://github.com/PWhiddy/Growing-Neural-Cellular-Automata-Pytorch?files=1 for the group parameter
+        return self.perception(state_grid)
 
 
-class Policy(nn.Module):
+class SimplePolicy(nn.Module):
+    def __init__(self, state_dim=16, interm_dim=128,
+                 use_embedding=False, kernel=1, padding=0,
+                 bias=False):
+        super().__init__()
+        dim = state_dim * 3
+        if use_embedding:
+            dim += 1
+        # self.conv1 = nn.Sequential(nn.Conv2d(dim, interm_dim, kernel, padding=padding),
+        #                            nn.InstanceNorm2d(interm_dim, affine=True),
+        #                            nn.ReLU(),
+        #                            nn.Conv2d(interm_dim, interm_dim, kernel, padding=padding))
+        self.conv1 = nn.Conv2d(dim, interm_dim, kernel, padding=padding)
+        self.conv2 = nn.Conv2d(interm_dim, state_dim, kernel, padding=padding,
+                               bias=bias)
+        nn.init.constant_(self.conv2.weight, 0.)
+        if bias:
+            nn.init.constant_(self.conv2.bias, 0.)
+
+    def forward(self, state):
+        interm = self.conv1(state)
+        interm = torch.relu(interm)
+        return self.conv2(interm)
+
+
+class AdaINPolicy(nn.Module):
     def __init__(self, state_dim=16, interm_dim=128,
                  use_embedding=True, kernel=1, padding=0,
                  bias=False):
@@ -36,7 +65,10 @@ class Policy(nn.Module):
         dim = state_dim * 3
         if use_embedding:
             dim += 1
-        self.conv1 = nn.Conv2d(dim, interm_dim, kernel, padding=padding)
+        self.conv1 = nn.Sequential(nn.Conv2d(dim, interm_dim, kernel, padding=padding),
+                                   nn.InstanceNorm2d(interm_dim, affine=True),
+                                   nn.ReLU(),
+                                   nn.Conv2d(interm_dim, interm_dim, kernel, padding=padding))
         self.conv2 = nn.Conv2d(interm_dim, state_dim, kernel, padding=padding,
                                bias=bias)
         nn.init.constant_(self.conv2.weight, 0.)

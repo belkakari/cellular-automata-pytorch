@@ -8,11 +8,10 @@ from torch.utils.data import Dataset
 from modules.utils import load_emoji
 
 
-class StateGridSet(Dataset):
+class SingleEmojiSet(Dataset):
     def __init__(self, emoji='🦎', use_coords=False,
                  batch_size=10, random_spawn=True,
                  pad=16, target_size=40):
-        # emojis = ['🦎', '😀', '💥', '👁', '🐠', '🦋', '🐞', '🕸', '🥨', '🎄']
 
         self.target = torch.from_numpy(load_emoji(emoji=emoji)).permute(2, 0, 1).unsqueeze(0)
         self.target = F.pad(self.target, (pad, pad, pad, pad), value=0)

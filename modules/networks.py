@@ -40,10 +40,6 @@ class SimplePolicy(nn.Module):
         dim = state_dim * 3
         if use_embedding:
             dim += 1
-        # self.conv1 = nn.Sequential(nn.Conv2d(dim, interm_dim, kernel, padding=padding),
-        #                            nn.InstanceNorm2d(interm_dim, affine=True),
-        #                            nn.ReLU(),
-        #                            nn.Conv2d(interm_dim, interm_dim, kernel, padding=padding))
         self.conv1 = nn.Conv2d(dim, interm_dim, kernel, padding=padding)
         self.conv2 = nn.Conv2d(interm_dim, state_dim, kernel, padding=padding,
                                bias=bias)
